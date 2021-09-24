@@ -2,8 +2,8 @@ import random
 import string
 
 import pytest
-from app import app
 from flask import json
+from src.app import app
 
 
 def generate_random_letters(num=50):
