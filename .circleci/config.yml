@@ -18,4 +18,4 @@ jobs:
           pkg-manager: pip
       - run:
           name: Run tests
-          command: pytest
+          command: python -m pytest
