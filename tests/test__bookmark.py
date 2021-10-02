@@ -1,4 +1,5 @@
 import random
+import sqlite3
 import string
 
 import pytest
@@ -47,6 +48,12 @@ def test_post_one_bookmarks():
 def test_get_all_bookmarks_route():
     res = app.test_client().get('/bookmarks/')
     data = json.loads(res.get_data(as_text=True))
+    # assert res.headers['Content-Type'] == 'application/json'
+    assert res.status_code == 200
+
+#test json data format is  are returned 
+def test_get_json_data_format_returns():
+    res = app.test_client().get('/bookmarks/')
+    data = json.loads(res.get_data(as_text=True))
+    assert res.status_code == 200
     assert res.headers['Content-Type'] == 'application/json'
-
-
