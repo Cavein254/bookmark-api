@@ -1,6 +1,6 @@
 # FLASK BOOKMARK API USING MARSHMALLOW
 
-!(python badge)[https://img.shields.io/badge/Python-3.8-green]
+![python badge](https://img.shields.io/badge/Python-3.8-green)
 This project tries to illustrate the concept of object validation in marshmallow.
 It uses SQLAlchemy to manage models, SQLite for data storage, Marshmallow for 
 data serialization,deserialization, and validation and tests created with
