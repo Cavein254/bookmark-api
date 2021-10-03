@@ -1,8 +1,8 @@
 # FLASK BOOKMARK API USING MARSHMALLOW
 This project tries to illustrate the concept of object validation in marshmallow.
 It uses SQLAlchemy to manage models, SQLite for data storage, Marshmallow for 
-data serialization,deserialization, and validation and finally tests created with
-pytest
+data serialization,deserialization, and validation and tests created with
+pytest. Finally, it incoporates Circle CI for Continuous Intergration.
 
 ## Instalation
 ---
