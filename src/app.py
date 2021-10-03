@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 from flask.scaffold import F
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
-from marshmallow import fields
+from marshmallow import fields, validate
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import null
@@ -46,12 +46,12 @@ db.session.commit()
 
 #Create schema with object validation (marshmallow)
 class BookMarkSchema(ma.Schema):
-    title = fields.Str(required = True)
-    url = fields.URL()
-    description = fields.String(required = False)
-    created_at = fields.DateTime(required = False)
-    updated_at = fields.DateTime(required = False)
-    
+    title = fields.Str(required = True, allow_none=False)
+    url = fields.URL(relative = True, require_tld=True, error="invalid url representation")
+    description = fields.String(required = False, allow_none= True)
+    created_at = fields.DateTime(required = False, allow_none= True)
+    updated_at = fields.DateTime(required = False, allow_none= True)
+
     class Meta:
         fields = ('id','title', 'description', 'url', 'created_at', 'updated_at')
 
@@ -61,7 +61,7 @@ BookMarks = BookMarkSchema(many = True)
 
 
 
-#API ROUTES
+#API ROUTES 
 #Get all bookmarks
 @app.route('/bookmarks/', methods = ['GET'])
 def book_marks():
@@ -75,6 +75,11 @@ def create_bookmark():
     description = request.json['description']
     url = request.json['url']
 
+    #Validate the data from request before serialization
+    error = BookMark.validate({'title':title,'description':description, 'url':url})
+    if (error):
+        return jsonify(error)
+    
     book_mark = BookMarkModel(title =title,description=description, url=url, created_at=datetime.datetime.now(), updated_at=datetime.datetime.now())
     db.session.add(book_mark)
     db.session.commit()
@@ -98,6 +103,12 @@ def update_bookmark(id):
     book_mark.title = title
     book_mark.description = description
     book_mark.url = url
+
+    #Validate the data from request before serialization
+    error = BookMark.validate({'title':title,'description':description, 'url':url})
+    if (error):
+        return jsonify(error)
+        
     db.session.add(book_mark)
     db.session.commit()
     return BookMark.jsonify(book_mark)
