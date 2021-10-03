@@ -48,7 +48,6 @@ def test_post_one_bookmarks():
 def test_get_all_bookmarks_route():
     res = app.test_client().get('/bookmarks/')
     data = json.loads(res.get_data(as_text=True))
-    # assert res.headers['Content-Type'] == 'application/json'
     assert res.status_code == 200
 
 #test json data format is  are returned 
