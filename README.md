@@ -1,9 +1,6 @@
 # FLASK BOOKMARK API USING MARSHMALLOW
 
-![python badge](https://img.shields.io/badge/Python-3.8-green)  
-![Flask badge](https://img.shields.io/badge/Flask%20-2.0.1-gray)  
-![MarshMallow badge](https://img.shields.io/badge/MarshMallow%20-13.3-blue)  
-![Pytest badge](https://img.shields.io/badge/pytest-6.2.5-red) 
+![python badge](https://img.shields.io/badge/Python-3.8-green)  ![Flask badge](https://img.shields.io/badge/Flask%20-2.0.1-gray)  ![MarshMallow badge](https://img.shields.io/badge/MarshMallow%20-13.3-blue)  ![Pytest badge](https://img.shields.io/badge/pytest-6.2.5-red) 
 
 
 This project tries to illustrate the concept of object validation in marshmallow.
