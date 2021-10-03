@@ -4,6 +4,8 @@ from flask import Flask, jsonify, request
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,22 +23,28 @@ ma = Marshmallow(app)
 
 #Create the API model (SQLAlchemy)
 class BookMarkModel(db.Model):
+    __tablename__ = 'bookmark'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False, unique=True)
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(DateTime(timezone=True), onupdate=func.now())
 
-    def __init__(self, title, url, description):
+    def __init__(self, title, url, description, created_at, updated_at):
         self.title = title
         self.url = url
         self.description = description
+        self.created_at = created_at
+        self.updated_at = updated_at
+
 db.create_all()
 db.session.commit()
 
 #Create schema (marshmallow)
 class BookMarkSchema(ma.Schema):
     class Meta:
-        fields = ('id','title', 'description', 'url')
+        fields = ('id','title', 'description', 'url', 'created_at', 'updated_at')
 
 
 BookMark = BookMarkSchema()
