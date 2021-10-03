@@ -1,11 +1,14 @@
+import datetime
 import os
 
 from flask import Flask, jsonify, request
+from flask.scaffold import F
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
+from sqlalchemy.sql.expression import null
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,8 +31,8 @@ class BookMarkModel(db.Model):
     title = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False, unique=True)
-    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = db.Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now(), nullable=True)
+    updated_at = db.Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
     def __init__(self, title, url, description, created_at, updated_at):
         self.title = title
@@ -41,8 +44,14 @@ class BookMarkModel(db.Model):
 db.create_all()
 db.session.commit()
 
-#Create schema (marshmallow)
+#Create schema with object validation (marshmallow)
 class BookMarkSchema(ma.Schema):
+    title = fields.Str(required = True)
+    url = fields.URL()
+    description = fields.String(required = False)
+    created_at = fields.DateTime(required = False)
+    updated_at = fields.DateTime(required = False)
+    
     class Meta:
         fields = ('id','title', 'description', 'url', 'created_at', 'updated_at')
 
@@ -66,7 +75,7 @@ def create_bookmark():
     description = request.json['description']
     url = request.json['url']
 
-    book_mark = BookMarkModel(title =title,description=description, url=url)
+    book_mark = BookMarkModel(title =title,description=description, url=url, created_at=datetime.datetime.now(), updated_at=datetime.datetime.now())
     db.session.add(book_mark)
     db.session.commit()
     return BookMark.jsonify(book_mark)
@@ -84,13 +93,14 @@ def update_bookmark(id):
     title = request.json['title']
     description = request.json['description']
     url = request.json['url']
+
     book_mark = BookMarkModel.query.get(id)
     book_mark.title = title
     book_mark.description = description
     book_mark.url = url
     db.session.add(book_mark)
     db.session.commit()
-    return BookMarks.jsonify(book_mark)
+    return BookMark.jsonify(book_mark)
 
 #DELETE a particular bookmark
 @app.route('/bookmark/<int:id>/', methods=['DELETE'])
