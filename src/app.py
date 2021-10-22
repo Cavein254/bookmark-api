@@ -86,21 +86,7 @@ def create_bookmark():
     error = BookMark.validate({"title": title, "description": description, "url": url})
     if error:
         return jsonify(error)
-    try: 
-        book_mark = BookMarkModel(
-        title=title,
-        description=description,
-        url=url,
-        created_at=datetime.datetime.now(),
-        updated_at=datetime.datetime.now(),
-        )
-        db.session.add(book_mark)
-        db.session.commit()
-        return BookMark.jsonify(book_mark)
     
-    except Exception as e:
-        print('--------------------------')
-        return  jsonify ({"error": "unable to write to database"})
 
 # READ a paticular bookmark
 @app.route("/bookmark/<int:id>/", methods=["GET"])
