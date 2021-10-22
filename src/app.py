@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Add SQLAlchemy
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://///" + os.path.join(
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     BASE_DIR, "db.sqlite3"
 )
 db = SQLAlchemy(app)
@@ -71,8 +71,15 @@ BookMarks = BookMarkSchema(many=True)
 # Get all bookmarks
 @app.route("/bookmarks/", methods=["GET"])
 def book_marks():
-    all_bookmarks = BookMarkModel.query.all()
-    return jsonify(BookMarks.dump(all_bookmarks))
+    try:
+        all_bookmarks = BookMarkModel.query.all()
+        return jsonify(BookMarks.dump(all_bookmarks))
+    except Exception as e:
+       return jsonify({
+           "error code": 3338,
+           "msg": "Unable to access the database"
+       })
+    
 
 
 # CREATE a bookmark
@@ -86,6 +93,24 @@ def create_bookmark():
     error = BookMark.validate({"title": title, "description": description, "url": url})
     if error:
         return jsonify(error)
+
+    try:
+       book_mark = BookMarkModel(
+       title=title,
+       description=description,
+       url=url,
+       created_at=datetime.datetime.now(),
+       updated_at=datetime.datetime.now(),
+       )
+       db.session.add(book_mark)
+       db.session.commit()
+       return BookMark.jsonify(book_mark)
+    except Exception as e:
+       return jsonify({
+           "error code": 3338,
+           "msg": "Unable to access the database"
+       })
+
     
 
 # READ a paticular bookmark
@@ -112,18 +137,30 @@ def update_bookmark(id):
     if error:
         return jsonify(error)
 
-    db.session.add(book_mark)
-    db.session.commit()
-    return BookMark.jsonify(book_mark)
+    try:
+        db.session.add(book_mark)
+        db.session.commit()
+        return BookMark.jsonify(book_mark)
+    except Exception as e:
+       return jsonify({
+           "error code": 3338,
+           "msg": "Unable to access the database"
+       })
 
 
 # DELETE a particular bookmark
 @app.route("/bookmark/<int:id>/", methods=["DELETE"])
 def delete_bookmark(id):
     book_mark = BookMarkModel.query.get(id)
-    db.session.delete(book_mark)
-    db.session.commit()
-    return jsonify({"success": "True"})
+    try:
+        db.session.delete(book_mark)
+        db.session.commit()
+        return jsonify({"success": "True"})
+    except Exception as e:
+       return jsonify({
+           "error code": 3338,
+           "msg": "Unable to access the database"
+       })
 
 
 # Serve the application
